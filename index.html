@@ -1,0 +1,76 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailandia - Proyecto Escolar</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Un Poco Sobre TAILANDIA</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="cosmovision.html">Cosmovisión</a></li>
+                <li><a href="necesidades.html">Necesidades</a></li>
+                <li><a href="creencias.html">Creencias</a></li>
+                <li><a href="economia.html">Actividad Económica</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Bienvenidos a Tailandia</h2>
+            <p>Este sitio web está diseñado para explorar aspectos clave de Tailandia, un fascinante país del sudeste asiático conocido por su rica cultura, tradiciones únicas y vibrante economía. A través de las siguientes subpáginas, descubrirás detalles sobre la cosmovisión, las necesidades, las creencias y la actividad económica de este reino, oficialmente llamado Reino de Tailandia.</p>
+            <p>Con una población de aproximadamente 70 millones de habitantes y una superficie de 513,120 km², Tailandia es un lugar donde la modernidad y la tradición se entrelazan. Su capital, Bangkok, es el centro político, comercial e industrial del país. Este proyecto escolar te llevará a conocer más sobre la identidad y el desarrollo de Tailandia.</p>
+            <p>Usa el menú de navegación para explorar cada tema. Cada sección incluye información detallada y dos imágenes que ilustran los aspectos culturales, sociales y económicos de Tailandia. ¡Esperamos que disfrutes aprendiendo sobre este increíble país!</p>
+            <center>
+            <img src="images/Bandera_Tailandia.png" alt="Vista aérea de Bangkok con templos y rascacielos" class="main-image" width="600">
+</center>
+        </section>
+    </main>
+    <footer>
+        <p>Proyecto escolar sobre Tailandia - Tecnología 8vo Grado - 2025</p>
+    </footer>
+</body>
+</html>

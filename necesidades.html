@@ -1,0 +1,80 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Necesidades de Tailandia</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Explorando Tailandia</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="cosmovision.html">Cosmovisión</a></li>
+                <li><a href="necesidades.html">Necesidades</a></li>
+                <li><a href="creencias.html">Creencias</a></li>
+                <li><a href="economia.html">Actividad Económica</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Necesidades de Tailandia</h2>
+            <p>Tailandia, como país en desarrollo, enfrenta diversas necesidades que reflejan tanto su rápido crecimiento económico como los desafíos de una sociedad en transición. Estas necesidades abarcan desde infraestructura hasta educación y sostenibilidad ambiental.</p>
+            <p>Una de las principales necesidades es mejorar la infraestructura. Tailandia está invirtiendo en proyectos como el Eastern Economic Corridor para modernizar el transporte y la conectividad, especialmente para integrar el país con China y otros vecinos a través de ferrocarriles de alta velocidad.</p>
+            <p>La educación es otra área crítica. Aunque Tailandia tiene una alta tasa de alfabetización (92.6%), el sistema educativo necesita reformas para fomentar el pensamiento crítico y las habilidades técnicas necesarias para una economía moderna. Los estudiantes tailandeses a menudo carecen de formación en análisis y creatividad.</p>
+            <p>El acceso a una fuerza laboral calificada es una necesidad urgente. Con una población envejeciendo rápidamente, Tailandia enfrenta escasez de mano de obra joven. Esto ha llevado a depender de trabajadores inmigrantes, lo que genera desafíos sociales y económicos.</p>
+            <p>La sostenibilidad ambiental es otra preocupación. La deforestación, causada por la expansión agrícola y la tala, ha reducido significativamente la cubierta forestal. Tailandia necesita implementar políticas para proteger sus bosques y recursos naturales.</p>
+            <p>En el sector de la salud, Tailandia busca mejorar el acceso a equipos médicos avanzados, especialmente en áreas como cardiología y neurocirugía, para consolidarse como líder regional en atención médica.</p>
+            <p>La reducción de la pobreza sigue siendo una necesidad, aunque ha disminuido del 67% en 1986 al 7.2% en 2015. Las desigualdades regionales, especialmente entre Bangkok y las zonas rurales, requieren políticas inclusivas para garantizar un crecimiento equitativo.</p>
+            <p>Por último, Tailandia necesita avanzar hacia una economía basada en el conocimiento (Thailand 4.0) para superar la trampa de ingresos medios, lo que implica invertir en innovación y tecnología.</p>
+            <img src="images/Infraestructura_Tailandia.jpg" alt="Construcción de ferrocarril en Tailandia" class="content-image" width="600">
+            <img src="images/Escuelas_Tailandia.jpg" alt="Aula escolar en una zona rural de Tailandia" class="content-image" width="600">
+        </section>
+    </main>
+    <footer>
+        <p>Proyecto escolar sobre Tailandia - Tecnología 8vo Grado - 2025</p>
+    </footer>
+</body>
+</html>

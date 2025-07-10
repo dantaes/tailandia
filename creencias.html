@@ -1,0 +1,80 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creencias de Tailandia</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Explorando Tailandia</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="cosmovision.html">Cosmovisión</a></li>
+                <li><a href="necesidades.html">Necesidades</a></li>
+                <li><a href="creencias.html">Creencias</a></li>
+                <li><a href="economia.html">Actividad Económica</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Creencias de Tailandia</h2>
+            <p>El budismo Theravāda es la religión predominante en Tailandia, practicada por aproximadamente el 95% de la población. Esta rama del budismo, originada en Sri Lanka, enfatiza la disciplina monástica y las enseñanzas originales de Buda, centradas en el karma y la reencarnación.</p>
+            <p>Los monjes budistas son figuras centrales en la sociedad tailandesa. Desde jóvenes, los novicios reciben educación en escritura y textos budistas, y a los 20 años pueden ordenarse como monjes, liderando ceremonias y transmitiendo enseñanzas.</p>
+            <p>El karma es un concepto clave: las buenas acciones llevan a resultados positivos, mientras que las malas generan consecuencias negativas. Esta creencia guía el comportamiento ético y la búsqueda de méritos para una mejor reencarnación.</p>
+            <p>Además del budismo, las creencias animistas están muy presentes. Los tailandeses creen en espíritus que habitan en la naturaleza, como árboles y ríos, y realizan ofrendas en pequeños altares llamados "casas de espíritus" para mantener la armonía.</p>
+            <p>El islam es la segunda religión más practicada, con un 4% de la población, principalmente en el sur del país. También hay minorías de cristianos, hindúes y taoístas, y la constitución tailandesa garantiza la libertad religiosa.</p>
+            <p>El respeto a los antepasados es una práctica espiritual esencial. Las familias realizan ceremonias para honrar a los fallecidos, creyendo que sus espíritus influyen en la vida diaria.</p>
+            <p>Existen tabúes culturales, como no tocar la cabeza de una persona (considerada sagrada) o señalar con los pies (la parte más impura del cuerpo). Estas normas reflejan la importancia de la etiqueta en la vida espiritual y social.</p>
+            <p>La tolerancia religiosa permite que diferentes creencias coexistan pacíficamente, aunque el gobierno regula el número de misioneros extranjeros. En general, las prácticas religiosas refuerzan la identidad cultural tailandesa.</p>
+            <img src="images/Templo_Tailandia.jpg" alt="Templo budista tailandés con estatuas doradas" class="content-image" width="700" high="400">
+            <img src="images/Budah_Tailandia.jpeg" alt="Aldea tailandesa tradicional con casas de madera" class="content-image" width="400" high="400">
+        </section>
+    </main>
+    <footer>
+        <p>Proyecto escolar sobre Tailandia - Tecnología 8vo Grado - 2025</p>
+    </footer>
+</house>
+</html>

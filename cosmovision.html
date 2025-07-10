@@ -1,0 +1,79 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmovisión de Tailandia</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Explorando Tailandia</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="cosmovision.html">Cosmovisión</a></li>
+                <li><a href="necesidades.html">Necesidades</a></li>
+                <li><a href="creencias.html">Creencias</a></li>
+                <li><a href="economia.html">Actividad Económica</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Cosmovisión de Tailandia</h2>
+            <p>La cosmovisión tailandesa es una mezcla única de tradiciones, creencias y prácticas que han evolucionado a lo largo de siglos, influenciada por las culturas vecinas como la india, china y jemer. Esta perspectiva del mundo está profundamente arraigada en el budismo Theravāda, que guía la forma en que los tailandeses ven la vida, la muerte y el universo.</p>
+            <p>En la cosmovisión tailandesa, el concepto de karma es fundamental. Los tailandeses creen que las acciones de una persona determinan su destino, tanto en esta vida como en las futuras reencarnaciones. Este principio fomenta una vida de buenas obras, compasión y respeto hacia los demás, ya que cada acción tiene consecuencias.</p>
+            <p>El respeto por la jerarquía social es otro pilar importante. La antigüedad, ya sea por edad o posición, es altamente valorada, y los ancianos tienen un rol central en las decisiones familiares y comunitarias. Esta estructura jerárquica se refleja en el lenguaje, los gestos y las interacciones diarias.</p>
+            <p>La hospitalidad y la generosidad son valores esenciales en la cultura tailandesa. Los tailandeses son conocidos por su amabilidad hacia los visitantes, lo que refleja su creencia en la importancia de crear armonía en las relaciones humanas. Este sentido de comunidad también se ve en las festividades y ceremonias colectivas.</p>
+            <p>La conexión con la naturaleza es otro aspecto clave. Aunque la modernización ha traído cambios, muchos tailandeses mantienen un respeto profundo por el medio ambiente, influenciado por creencias animistas que consideran sagrados ciertos lugares, como ríos y montañas.</p>
+            <p>El arte y la arquitectura tailandesa también reflejan su cosmovisión. Los templos, con sus diseños intrincados, representan la conexión entre lo terrenal y lo divino. La arquitectura del período Ayutthaya (1350-1767) destaca por su grandeza, diseñada para mostrar poder espiritual y terrenal.</p>
+            <p>Los tailandeses también valoran el equilibrio entre modernidad y tradición. Mientras Bangkok es una metrópoli moderna, las zonas rurales preservan prácticas ancestrales, como ceremonias para honrar a los espíritus de la tierra. Esta dualidad define su identidad cultural.</p>
+            <p>En resumen, la cosmovisión tailandesa combina espiritualidad, respeto social y conexión con la naturaleza, creando una sociedad que valora la armonía y el equilibrio en todos los aspectos de la vida.</p>
+            <img src="images/Cosmovisión_Tailandia.jpeg" alt="Templo budista tailandés con estatuas doradas" class="content-image" width="600">
+        </section>
+    </main>
+    <footer>
+        <p>Proyecto escolar sobre Tailandia - Tecnología 8vo Grado - 2025</p>
+    </footer>
+</body>
+</html>
